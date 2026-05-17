@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: scheduler
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/scheduler_app?useSSL=false&serverTimezone=Asia/Ho_Chi_Minh&allowPublicKeyRetrieval=true
+    username: root
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      pool-name: NotificationPool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate           # Không tự tạo bảng — đã chạy schema_mysql8.sql
+    show-sql: false                # Bật true khi debug
+    open-in-view: false            # Tắt OSIV — tốt cho REST API
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect   # MySQL 8 dùng MySQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Ho_Chi_Minh                 # Đồng bộ timezone với MySQL
+
+  task:
+    scheduling:
+      pool:
+        size: 3                    # Số thread cho Scheduler
+
+# Cấu hình Firebase
+firebase:
+  service-account-path: classpath:firebase-service-account.json
+
+# Cấu hình Scheduler
+notification:
+  scheduler:
+    fixed-delay-ms: 30000          # 30 giây sau khi job trước kết thúc
+    initial-delay-ms: 5000         # Chờ 5 giây sau khi Spring Boot start
+    batch-size: 50
+    max-retry: 3
+
+logging:
+  level:
+    com.app.notification.scheduler: INFO
+    com.app.notification.scheduler.service: DEBUG
+    org.hibernate.SQL: DEBUG       # Bật khi cần debug query
